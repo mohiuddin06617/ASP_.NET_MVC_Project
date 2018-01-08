@@ -1,0 +1,48 @@
+﻿
+@{
+    ViewBag.Title = "Home";
+    Layout = "~/Views/Shared/_SiteLayout.cshtml";
+}
+
+<!--Photo and who i am container-->
+<div class="container-fluid text-center" style="background-color: #00cccc; color: #f5f6f7; padding-top: 30px; padding-bottom: 30px">
+    <h3 class="margin">I am a Software Developer</h3>
+    <img src="images/nahid.jpg" class="img-circle img-rounded margin" style="display:inline-block" alt="me" width="250" height="250">
+    <h3>I am a Software Developer I am a Software Developer I am a Software Developer</h3>
+</div>
+
+
+<!--Post search bar-->
+<div class="container-fluid text-center" style="background-color: #474E5D; color: #f5f6f7">
+    <h3 class="margin">Want to Read My Posts?</h3>
+    <h4 class="margin">Please enter the keyword or post name for search</h4>
+    <form action="search.php" class="form-inline">
+        <input type="text" placeholder="Enter Keyword" id="search" class="form-control">
+        <button type="submit" class="btn btn-info">
+            <span class="glyphicon glyphicon-search"></span>
+            Search
+        </button>
+    </form>
+</div>
+
+<!--Latest post gallery-->
+<div class="container-fluid text-center" style="background-color: #f5f6f7; color: #474E5D; padding-top: 30px; padding-bottom: 30px">
+    <h3 class="margin">Check out my latest posts</h3>
+    <div class="row">
+        @for (int i = 0; i < 3; i++)
+        {
+             <div class="col-md-4">
+                <div class="thumbnail">
+                    <a href="images/ocean.jpg">
+                        <img src="images/ocean.jpg" alt="post image" style="width:100%">
+                        <div class="caption">
+                            <p>hello hello hellovg hello hello</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        }
+           
+    </div>
+</div>
+

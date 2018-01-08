@@ -1,0 +1,152 @@
+﻿@model PWEntity.ViewModels.ArticleViewModel
+
+@{
+    ViewBag.Title = "Create";
+}
+@section tinymcejs{
+<script src="~/Scripts/tinymce/tinymce.js"></script>
+<script type="text/javascript">
+    //tinyMCE_GZ.init({
+    //    plugins: 'style,layer,table,save,advhr,advimage,advlink,emotions,iespell,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras',
+    //    themes: 'simple,advanced',
+    //    languages: 'en',
+    //    disk_cache: true,
+    //    debug: false
+    //});
+</script>
+<script type="text/javascript">
+    tinymce.init({
+        selector: '.tinymce',
+        height: 1000,
+        plugins: [
+            "advlist autolink autosave link image lists charmap print preview hr anchor pagebreak",
+            "searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking",
+            "table contextmenu directionality emoticons template textcolor paste fullpage textcolor colorpicker textpattern"
+        ],
+
+        toolbar1: "newdocument fullpage | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | styleselect formatselect fontselect fontsizeselect",
+        toolbar2: "cut copy paste | searchreplace | bullist numlist | outdent indent blockquote | undo redo | link unlink anchor image media code | insertdatetime preview | forecolor backcolor",
+        toolbar3: "table | hr removeformat | subscript superscript | charmap emoticons | print fullscreen | ltr rtl | visualchars visualblocks nonbreaking template pagebreak restoredraft",
+        content_css: [
+            'fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
+            'www.tinymce.com/css/codepen.min.css'],
+
+        menubar: false,
+        toolbar_items_size: 'small',
+
+        style_formats: [{
+            title: 'Bold text',
+            inline: 'b'
+        }, {
+            title: 'Red text',
+            inline: 'span',
+            styles: {
+                color: '#ff0000'
+            }
+        }, {
+            title: 'Red header',
+            block: 'h1',
+            styles: {
+                color: '#ff0000'
+            }
+        }, {
+            title: 'Example 1',
+            inline: 'span',
+            classes: 'example1'
+        }, {
+            title: 'Example 2',
+            inline: 'span',
+            classes: 'example2'
+        }, {
+            title: 'Table styles'
+        }, {
+            title: 'Table row 1',
+            selector: 'tr',
+            classes: 'tablerow1'
+        }],
+
+        templates: [{
+            title: 'Test template 1',
+            content: 'Test 1'
+        }, {
+            title: 'Test template 2',
+            content: 'Test 2'
+        }],
+
+        init_instance_callback: function () {
+            window.setTimeout(function () {
+                $("#div").show();
+            }, 1000);
+        }
+
+    });
+</script>
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            <label class="control-label col-md-2">Subject</label>
+            @*
+                @Html.LabelFor(model => model.subject, htmlAttributes: new { @class = "control-label col-md-2" })
+            *@
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Article.subject, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Article.subject, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @* @Html.LabelFor(model => model.content, htmlAttributes: new { @class = "control-label col-md-2" })*@
+            <label class="control-label col-md-2">Content</label>
+            <div class="col-md-10">
+                @Html.TextAreaFor(model => model.Article.content, new { @class = "tinymce form-control form-group-sm" })
+                @Html.ValidationMessageFor(model => model.Article.content, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        @*
+            @Html.LabelFor(model => model.attachmentUrl, htmlAttributes: new { @class = "control-label col-md-2" })
+        *@
+        @*<div class="form-group">
+
+                <label class="control-label col-md-2">Attach Image</label>
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.attachmentUrl, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.attachmentUrl, "", new { @class = "text-danger" })
+                </div>
+            </div>*@
+
+        <div class="form-group">
+            @*@Html.LabelFor(model => model.date, htmlAttributes: new { @class = "control-label col-md-2" })
+            *@
+            <label class="control-label col-md-2">Enter Date</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Article.date, new { htmlAttributes = new { @class = "form-control", @Value = DateTime.Now } })
+                @Html.ValidationMessageFor(model => model.Article.date, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @*@Html.LabelFor(model => model.date, htmlAttributes: new { @class = "control-label col-md-2" })
+            *@
+            <label class="control-label col-md-3">Select Article Categories</label>
+            <div class="col-md-9">
+                @Html.DropDownListFor(model => model.Article.CategoryId, new SelectList(Model.Categories,"Id", "CategoryName"),"Select Category", new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Article.CategoryId,"", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-primary btn-lg"/>
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>

@@ -1,0 +1,77 @@
+﻿
+@{
+    ViewBag.Title = "Chat";
+    //Layout = "~/Views/Shared/_SiteLayout.cshtml";
+}
+
+<h2>Chat</h2>
+<div class="container-fluid jumbotron">
+    <div class="row" id="allComments">
+        <p id="commentorName"></p>
+        <p id="commentorEmail"></p>
+        <p id="comment"></p>
+    </div>
+</div>
+<div class="container">
+    <input type="text" class="form-control input-lg" id="message" />
+    <input type="button" id="sendmessage" value="Send" class="btn btn-primary btn-lg"/>
+    
+    <input type="hidden" id="displayname" />
+    <ul id="discussion"></ul>
+</div>
+@section scripts{
+    <script src="~/Scripts/jquery.signalR-2.2.2.min.js"></script>
+    <script src="~/signalr/hubs"></script>
+    <script>
+        $(function() {
+            // Reference the auto-generated proxy for the hub.
+            var chat = $.connection.chatHub;
+            // Create a function that the hub can call back to display messages.
+            chat.client.addNewMessageToPage = function(name, message) {
+                // Add the message to the page.
+                $('#discussion')
+                    .append('<li><strong>' + htmlEncode(name) + '</strong>: ' + htmlEncode(message) + '</li>');
+            };
+            // Get the user name and store it to prepend to messages.
+            $('#displayname').val(prompt('Enter your name:', ''));
+            // Set initial focus to message input box.
+            $('#message').focus();
+
+            function allComments(commentList) {
+                console.log(commentList);
+                for (var i = 0; i < commentList.length; i++) {
+                    
+                    $("#comment").append("<div class='col-lg-12 col-md-12 col-sm-12 col-xs-12'><div class='panel panel-info'><div class=\"panel-heading\">\n<strong>" + commentList[i].commenterName + "</strong> <span class=\"text-muted\">commented  on " + commentList[i].date + "</span>\n</div>\n<div class=\"panel-body\">\n" + commentList[i].comment+"\n</div></div></div><br>");
+                }
+              
+            }
+
+            // Start the connection.
+            $.connection.hub.start().done(function() {
+                $('#sendmessage').click(function() {
+                    // Call the Send method on the hub.
+                    chat.server.send($('#displayname').val(), $('#message').val());
+                    // Clear text box and reset focus for next comment.
+                    $('#message').val('').focus();
+                });
+
+                /*chat.server.getAllComment()
+                    .done(function(commentList) {
+                        /*$.each(commentList,allComments(commentList));#1#
+                        console.log("All Comments Fetched!");
+                        allComments(commentList);
+                    })
+                    .fail(function(error) {
+                        allComments(error + "Hu Hu ! I'm here");
+                    });*/
+            });
+        });
+
+        // This optional function html-encodes messages for display in the page.
+        function htmlEncode(value) {
+            var encodedValue = $('<div />').text(value).html();
+            return encodedValue;
+        }
+    </script>
+}
+

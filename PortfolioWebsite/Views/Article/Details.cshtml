@@ -1,0 +1,215 @@
+﻿@using PWEntity
+@model PWEntity.ViewModels.ArticleDetailViewModel
+
+@{
+    ViewBag.Title = Model.Article.subject;
+
+}
+@section links{
+    <link href="~/Content/blog.css" rel="stylesheet" />
+}
+
+
+
+<div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12">
+    <div class="blog-post">
+        <h2 class="blog-post-title">@Html.DisplayFor(model => model.Article.subject)</h2>
+        <p class="blog-post-meta">
+            @Html.DisplayFor(model => model.Article.date)
+        </p>
+        <p class="blog-description" style="color: black !important">
+            @Html.Raw(Model.Article.content)
+        </p>
+    </div>
+    <hr />
+    <p>
+        @Html.ActionLink("Edit", "Edit", new { id = Model.Article.Id }, new { @class = "btn btn-primary" }) |
+        @Html.ActionLink("Back to Blog", "Index", "", new { @class = "btn btn-primary" })
+    </p>
+</div>
+<div class="row">
+    <div style="width: 100%; height: 7px; background: #72c089; overflow: hidden;"></div>
+    <h4>Comments :</h4>
+    <hr />
+
+    <div id="allComments">
+
+        @foreach (var articleComment in Model.ArticleComments)
+        {
+            if (articleComment.Equals(null))
+            {
+
+                <h2 class="alert-danger">No Comments</h2>
+            }
+            else
+            {
+                <div class='col-lg-12 col-md-12 col-sm-12 col-xs-12'>
+                    <div class='panel panel-info'>
+                        <div class="panel-heading">
+                            <strong style="font-size: 20px; ">@articleComment.commenterName</strong>
+                            <span class="text-muted">commented on @articleComment.date</span>
+                            <div class="panel-body" style="color: black !important;">
+                                @articleComment.comment
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            }
+
+        }
+    </div>
+
+</div>
+
+@*<form class="form-horizontal" method="post" id="commentPost">*@
+@using (Html.BeginForm(/*"PostComment","Article"*/))
+{
+    <div class="form-group">
+        <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12">
+            <label for="commentorName">Name :</label>
+            <input type="text" placeholder="Enter Your Name Here" id="commentorName" name="commentorName" class="form-control" />
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12">
+            <label for="commentorEmail">Email : </label>
+            <input type="text" placeholder="Enter Your Email Here" id="commentorEmail" name="commentorEmail" class="form-control" />
+        </div>
+    </div>
+            <div class="form-group">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <label for="comment">Comments :</label>
+                    <textarea class="form-control" id="comment" name="comment" placeholder="Enter Your Comment Here"></textarea>
+                    @* @Html.TextAreaFor(model => model.content, new {@class = "form-control"})
+                        @Html.ValidationMessageFor(model => model.content, "", new {@class = "text-danger"})*@
+                </div>
+            </div>
+            <input type="hidden" name="articleId" id="articleId" value="@Model.Article.Id" />
+
+            <button type="button" class="btn btn-primary pull-left" id="btnCommentPost">Post</button>
+            @*@Html.ActionLink("Post", "PostComment")*@
+
+    /*</form>*/
+}
+
+
+@section scripts{
+
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $("#btnCommentPost").on("click",
+            function () {
+
+                sendData();
+                /*var data = $("#commentPost").serialize();
+                console.log(data);*/
+                   /*alert("Clicked!");*/
+
+            });
+
+        function sendData() {
+            var url = '@Url.Action("PostComment", "Article")';
+            var commentorName = $("#commentorName").val();
+            var commentorEmail = $("#commentorEmail").val();
+            var comment = $("#comment").val();
+            var articleId = $("#articleId").val();
+            $.ajax({
+                url: url,
+                type: "post",
+                data: /*dataObject*/{ 'commentorName': commentorName, 'commentorEmail' : commentorEmail,'comment':comment ,'articleId':articleId},
+                cache: false,
+                success: function (data) {
+                    /*$("#allComments").append(
+                        '<div class=\'col-lg-12 col-md-12 col-sm-12 col-xs-12\'>' +
+                        '<div class=\'panel panel-info\'><div class="panel-heading">\n<strong>' +
+                        commentorName +
+                        "</strong> <span class=\"text-muted\">commented  on " +
+                        new Date($.now()) +
+                        "</span>\n</div>\n<div class=\"panel-body\">\n" +
+                        comment +
+                        "\n</div></div></div><br>");*/
+
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    $('#lblCommentsNotification').text("Error encountered while saving the comments.");
+                }
+            });
+            /*var dataObject = JSON.stringify({
+                'commentorName': commentorName,
+                'commentorEmail': commentorEmail,
+                'comment': comment
+            });*/
+        }
+    });
+    </script>
+    <script src="~/Scripts/jquery.signalR-2.2.2.min.js"></script>
+    <script src="~/signalr/hubs"></script>
+    <script>
+        $(function () {
+            // Reference the auto-generated proxy for the hub.
+            var comment = $.connection.commentsHub;
+            // Create a function that the hub can call back to display messages.
+            comment.client.addingNewCommentsToPage = function (commenterName, email, comment, articleId) {
+                // Add the message to the page.
+                $("#allComments").append(
+                    "<div class='col-lg-12 col-md-12 col-sm-12 col-xs-12'>" +
+                    "<div class='panel panel-info'><div class=\"panel-heading\">\n<strong>" +
+                    commenterName +
+                    "</strong> <span class=\"text-muted\">commented  on " +
+                    new Date($.now()) +
+                    "</span>\n</div>\n<div class=\"panel-body\">\n" +
+                    comment +
+                    "\n</div></div></div>");
+                /* $('#allComments')
+                     .append('<li><strong>' +htmlEncode(commenterName) + '</strong>: ' + htmlEncode(comment) + '</li>');*/
+            };
+            /*$('#displayname').val(prompt('Enter your name:', ''));*/
+            // Set initial focus to message input box.
+            /*$('#comment').focus();*/
+
+            /* function allComments(commentList) {
+                 console.log(commentList);
+                 for (var i = 0; i < commentList.length; i++) {
+
+                     $("#comment").append("<div class='col-lg-12 col-md-12 col-sm-12 col-xs-12'><div class='panel panel-info'><div class=\"panel-heading\">\n<strong>" + commentList[i].commenterName + "</strong> <span class=\"text-muted\">commented  on " + commentList[i].date + "</span>\n</div>\n<div class=\"panel-body\">\n" + commentList[i].comment+"\n</div></div></div><br>");
+                 }
+
+             }*/
+
+            // Start the connection.
+            $.connection.hub.start().done(function () {
+                $('#btnCommentPost').click(function () {
+                    var articleId = $("#articleId").val();
+                    // Call the Send method on the hub.
+                    comment.server.addNewComment($('#commentorName').val(), $('#commentorEmail').val(), $('#comment').val(), articleId);
+                    // Clear text box and reset focus for next comment.
+                    $('#comment').val('').focus();
+                    $('#commentorName').val('').focus();
+                    $('#commentorEmail').val('').focus();
+                });
+
+                /*  comment.server.getAllComment()
+                      .done(function(commentList) {
+                          /*$.each(commentList,allComments(commentList));#1#
+                          console.log("All Comments Fetched!");
+                          allComments(commentList);
+                      })
+                      .fail(function(error) {
+                          allComments(error + "Hu Hu ! I'm here");
+                      });*/
+            });
+        });
+
+        // This optional function html-encodes messages for display in the page.
+        function htmlEncode(value) {
+            var encodedValue = $('<div />').text(value).html();
+            return encodedValue;
+        }
+    </script>
+}
+
+
+
+
+

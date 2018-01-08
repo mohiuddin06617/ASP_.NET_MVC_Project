@@ -1,0 +1,126 @@
+﻿@using System.Text.RegularExpressions
+@model IEnumerable<PWEntity.Article>
+
+@{
+    ViewBag.Title = "Blog Article";
+}
+@section BlogDesign{
+    <link rel="stylesheet" href="~/Content/font-awesome.min.css" />
+    <link href="~/Content/blog.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/jquery-ui.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/autocomplete.css" rel="stylesheet" />
+}
+
+
+@section BlogDesignJs{
+    <script src="~/Scripts/jquery-ui-1.12.1.js"></script>
+    <script src="~/Scripts/tinymce/tinymce.js"></script>
+    <script src="~/Scripts/searchArticle.js"></script>
+}
+
+
+@*<h2>Index</h2>
+
+    <p>
+        @Html.ActionLink("Create New", "Create")
+    </p>*@
+
+
+<div class="row">
+    <div class="col-lg-2 col-md-2">
+        <p>
+            @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-primary btn-lg " })
+        </p>
+        
+    </div>
+    <hr />
+ 
+    <div class="col-lg-8 blog-main col-md-8 col-sm-12 col-xs-12">
+
+        @foreach (var item in Model)
+        {
+            <div class="blog-post">
+                <h2 class="blog-post-title">@Html.ActionLink(item.subject, "Details", "Article", new { id = item.Id, subject = item.subject }, null)</h2>
+                <p class="blog-post-meta">@Html.DisplayFor(modelItem => item.date)</p>
+                <p class="blog-description" style="color: black !important">
+                    @{
+                        var content = Html.Raw(item.content);
+                        var modifiedContent = Regex.Replace(content.ToString(), @"<[^>]*>", "");
+                    }
+
+                    @if (modifiedContent.Length > 50)
+                    {
+                        var contents = modifiedContent.Substring(0, 30) + "...";
+                        @contents
+                        @Html.ActionLink("Read More", "Details", new { id = item.Id }, new { @class = "btn btn-primary" })
+
+                    }
+                    else
+                    {
+                        @modifiedContent
+                    }
+                </p>
+                <div class="blog-nav">
+                    @Html.ActionLink("Edit", "Edit", new { id = item.Id }, new { @class = "btn btn-primary" }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.Id }, new { @class = "btn btn-danger" })
+                </div>
+
+            </div>
+            <div style="width: 100%; height: 5px; background: #72c089; overflow: hidden;"></div>
+        }
+    </div>
+    <div class="col-lg-2 col-md-2">
+        <div class="form-inline">
+            <input type="search" id="searchBySubject" class="form-control input-lg searchBySubject" placeholder="Search By Article Name..." />
+            <br />
+            <button class="btn btn-primary btn-sm pull-left text-muted">Search <i class="fa fa-search"></i></button>
+        </div>
+    </div>
+</div>
+
+@*<table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.subject)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.content)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CategoryId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UserId)
+            </th>
+            <th></th>
+        </tr>
+
+    @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.subject)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.content)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.date)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CategoryId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserId)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
+                @Html.ActionLink("Details", "Details", new { id=item.Id }) |
+                @Html.ActionLink("Delete", "Delete", new { id=item.Id })
+            </td>
+        </tr>
+    }
+
+    </table>*@
