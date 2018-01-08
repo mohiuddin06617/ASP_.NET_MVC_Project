@@ -1,1 +1,1 @@
-This is a Article Management Web Application. This application was built with ASP .Net MVC,jQiery,Bootstrap,ASP. Net Web Api 
+This is a Article Management Web Application. Anyone can Sign Up and Start generating article using this web application. When a person will sign up an individual unique api key will be generated from his/her email name by which they can call their article from any platform. This application was built with ASP .Net MVC,jQiery,Bootstrap,ASP. Net Web Api.
